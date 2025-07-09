@@ -883,4 +883,157 @@
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('
+                        entry.target.classList.add('animate-fade-in');
+                    }
+                });
+            }, observerOptions);
+
+            // Observar todas las secciones para animaciones
+            document.querySelectorAll('.section').forEach(section => {
+                observer.observe(section);
+            });
+
+            // Efectos de hover para las cards
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = '0 15px 30px rgba(1, 35, 75, 0.15)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 5px 15px rgba(1, 35, 75, 0.1)';
+                });
+            });
+
+            // Efectos de hover para pricing cards
+            document.querySelectorAll('.pricing-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    if (!this.classList.contains('featured')) {
+                        this.style.transform = 'translateY(-10px) scale(1.02)';
+                        this.style.boxShadow = '0 20px 40px rgba(1, 35, 75, 0.2)';
+                    }
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    if (!this.classList.contains('featured')) {
+                        this.style.transform = 'translateY(0) scale(1)';
+                        this.style.boxShadow = '0 10px 25px rgba(1, 35, 75, 0.1)';
+                    }
+                });
+            });
+
+            // Efecto de click en el botón CTA
+            document.querySelector('.cta-button').addEventListener('click', function() {
+                // Efecto visual de click
+                this.style.transform = 'translateY(-3px) scale(0.98)';
+                this.style.boxShadow = '0 5px 15px rgba(252, 179, 46, 0.6)';
+                
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-3px) scale(1)';
+                    this.style.boxShadow = '0 10px 25px rgba(252, 179, 46, 0.4)';
+                }, 150);
+
+                // Aquí puedes agregar funcionalidad real como:
+                // window.open('https://vennii.com/signup', '_blank');
+                // o redirigir a una página de contacto
+                alert('¡Gracias por tu interés en Vennii! Proximamente lanzamiento.');
+            });
+
+            // Animación de contadores para las métricas
+            function animateCounter(element, target, duration = 2000) {
+                let start = 0;
+                const increment = target / (duration / 16);
+                
+                function updateCounter() {
+                    start += increment;
+                    if (start < target) {
+                        element.textContent = Math.floor(start);
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        element.textContent = target;
+                    }
+                }
+                updateCounter();
+            }
+
+            // Aplicar animación de contadores cuando entren en vista
+            const metricsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const metricNumber = entry.target.querySelector('.metric-number');
+                        if (metricNumber && !metricNumber.classList.contains('animated')) {
+                            metricNumber.classList.add('animated');
+                            const text = metricNumber.textContent;
+                            const number = parseInt(text.replace(/[^0-9]/g, ''));
+                            if (number) {
+                                metricNumber.textContent = '0';
+                                animateCounter(metricNumber, number);
+                                // Restaurar el formato original después de la animación
+                                setTimeout(() => {
+                                    metricNumber.textContent = text;
+                                }, 2100);
+                            }
+                        }
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            // Observar todas las métricas
+            document.querySelectorAll('.metric').forEach(metric => {
+                metricsObserver.observe(metric);
+            });
+
+            // Efecto parallax sutil en el header
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const rate = scrolled * -0.5;
+                const header = document.querySelector('.header');
+                if (header) {
+                    header.style.transform = `translate3d(0, ${rate}px, 0)`;
+                }
+            });
+
+            // Smooth scrolling para navegación interna (si agregas menú)
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Agregar efecto de typing para el título principal
+            function typeWriter(element, text, speed = 100) {
+                let i = 0;
+                element.innerHTML = '';
+                
+                function type() {
+                    if (i < text.length) {
+                        element.innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(type, speed);
+                    }
+                }
+                type();
+            }
+
+            // Aplicar efecto typing al título después de un delay
+            setTimeout(() => {
+                const mainTitle = document.querySelector('.header h1');
+                if (mainTitle) {
+                    const originalText = mainTitle.textContent;
+                    typeWriter(mainTitle, originalText, 150);
+                }
+            }, 1000);
+
+        });
+    </script>
+</body>
+</html>
