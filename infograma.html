@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vennii - Estrategia de Negocio</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --vennii-orange: #FCB32E;
+            --vennii-dark-blue: #01234B;
+            --vennii-light-blue: #60D3D3;
+            --vennii-white: #FFFFFF;
+            --vennii-light-gray: #F8F9FA;
+            --vennii-dark-gray: #6B7280;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--vennii-light-gray) 0%, #E5F3F3 100%);
+            color: var(--vennii-dark-blue);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(135deg, var(--vennii-dark-blue) 0%, #1e3a8a 100%);
+            color: white;
+            margin-bottom: 40px;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FCB32E' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            opacity: 0.3;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .logo-orange {
+            background: var(--vennii-orange);
+            transform: rotate(-45deg);
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        .logo-blue {
+            background: var(--vennii-dark-blue);
+            left: 40px;
+            clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+        }
+
+        .logo-light-blue {
+            background: var(--vennii-light-blue);
+            left: 50px;
+            clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(1, 35, 75, 0.1);
+            border: 1px solid rgba(96, 211, 211, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(1, 35, 75, 0.15);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--vennii-dark-blue);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--vennii-orange), #FFD700);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 4px solid var(--vennii-orange);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateX(5px);
+            border-left-color: var(--vennii-light-blue);
+        }
+
+        .card h3 {
+            color: var(--vennii-dark-blue);
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .card p, .card li {
+            color: var(--vennii-dark-gray);
+            font-size: 0.95rem;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, var(--vennii-orange) 0%, #FFD700 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--vennii-light-blue) 0%, #A0F0F0 100%);
+            border-radius: 12px;
+            color: var(--vennii-dark-blue);
+        }
+
+        .metric-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            display: block;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--vennii-orange), var(--vennii-light-blue));
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(1, 35, 75, 0.1);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -37px;
+            top: 25px;
+            width: 12px;
+            height: 12px;
+            background: var(--vennii-orange);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--vennii-orange);
+        }
+
+        .timeline-item h4 {
+            color: var(--vennii-dark-blue);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--vennii-orange);
+            transform: scale(1.05);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(1, 35, 75, 0.15);
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--vennii-orange);
+            margin: 15px 0;
+        }
+
+        .features {
+            list-style: none;
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .features li {
+            padding: 8px 0;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--vennii-light-blue);
+            font-weight: bold;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, var(--vennii-dark-blue) 0%, #1e3a8a 100%);
+            color: white;
+            text-align: center;
+            padding: 50px 30px;
+            border-radius: 20px;
+            margin-top: 40px;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, var(--vennii-orange) 0%, #FFD700 100%);
+            color: var(--vennii-dark-blue);
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(252, 179, 46, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .pricing-card.featured {
+                transform: none;
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header animate-fade-in">
+            <div class="logo">
+                <div class="logo-circle logo-orange"></div>
+                <div class="logo-circle logo-blue"></div>
+                <div class="logo-circle logo-light-blue"></div>
+            </div>
+            <h1>Vennii</h1>
+            <p>El Futuro del Trabajo en Centroamérica, Impulsado por IA</p>
+        </header>
+
+        <!-- Resumen Ejecutivo -->
+        <section class="section animate-fade-in">
+            <h2 class="section-title">
+                <div class="section-icon">🎯</div>
+                Resumen Ejecutivo
+            </h2>
+            <div class="highlight-box">
+                Plataforma de emparejamiento laboral impulsada por IA que conecta candidatos con empleos compatibles, 
+                reduciendo tiempos de búsqueda en 70-85% con transparencia salarial completa
+            </div>
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3>🔍 Para Candidatos (B2C)</h3>
+                    <p>"Descubre tu verdadero potencial profesional con IA que encuentra empleos perfectos y te dice exactamente cuánto puedes ganar"</p>
+                </div>
+                <div class="card">
+                    <h3>🏢 Para Empresas (B2B)</h3>
+                    <p>"Transforma la escasez de talento en abundancia de candidatos relevantes, reduciendo reclutamiento de 24+ días a 5-15 días"</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Problemas del Mercado -->
+        <section class="section animate-fade-in">
+            <h2 class="section-title">
+                <div class="section-icon">⚠️</div>
+                Problemas del Mercado
+            </h2>
+            <div class="grid grid-4">
+                <div class="metric">
+                    <span class="metric-number">85%</span>
+                    <div class="metric-label">Jóvenes con dificultad para encontrar empleo</div>
+                </div>
+                <div class="metric">
+                    <span class="metric-number">68%</span>
+                    <div class="metric-label">Empresas con problemas de reclutamiento</div>
+                </div>
+                <div class="metric">
+                    <span class="metric-number">4-8</span>
+                    <div class="metric-label">Meses promedio búsqueda empleo</div>
+                </div>
+                <div class="metric">
+                    <span class="metric-number">23-30</span>
+                    <div class="metric-label">Días promedio reclutamiento</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Diferenciadores -->
+        <section class="section animate-fade-in">
+            <h2 class="section-title">
+                <div class="section-icon">⚡</div>
+                Diferenciadores Clave
+            </h2>
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3>🤖 Hiper-personalización por IA</h3>
+                    <p>Matching semántico avanzado vs filtros básicos tradicionales para encontrar compatibilidad real</p>
+                </div>
+                <div class="card">
+                    <h3>💰 Transparencia Salarial</h3>
+                    <p>Datos reales del mercado panameño en alianza con "Panamá en Salarios"</p>
+                </div>
+                <div class="card">
+                    <h3>🇵🇦 Especialización Local</h3>
+                    <p>Enfoque específico en Centroamérica con contexto cultural y económico local</p>
+                </div>
+                <div class="card">
+                    <h3>🚀 Velocidad Superior</h3>
+                    <p>70-85% reducción en tiempos vs métodos tradicionales de búsqueda y reclutamiento</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Segmentos y Tamaño de Mercado -->
+        <section class="section animate-fade-in">
+            <h2 class="section-title">
+                <div class="section-icon">📊</div>
+                Segmentos y Oportunidad de Mercado
+            </h2>
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3>🎓 Segmentos B2C</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin: 10px 0;"><strong>Profesionales en Transición:</strong> ~35,000 personas (26-40 años)</li>
+                        <li style="margin: 10px 0;"><strong>Jóvenes Universitarios:</strong> ~25,000 personas próximos a graduarse</li>
+                    </ul>
+                    <div class="highlight-box" style="margin-top: 15px; font-size: 0.9rem;">
+                        TAM B2C: $52M/año
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>🏢 Segmentos B2B</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin: 10px 0;"><strong>PYMEs en Crecimiento:</strong> ~2,800 empresas (51-200 empleados)</li>
+                        <li style="margin: 10px 0;"><strong>Empresas Regulares:</strong> ~350 empresas (101-500 empleados)</li>
+                    </ul>
+                    <div class="highlight-box" style="margin-top: 15px; font-size: 0.9rem;">
+                        TAM B2B: $81.5M/año
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modelo de Precios B2C -->
+        <section class="section animate-fade-in">
+            <h2 class="section-title">
+                <div class="section-icon">👤</div>
+                Modelos B2C - CareerMatch
+            </h2>
+            <p style="text-align: center; color: var(--vennii-dark-gray); margin-bottom: 30px; font-size: 1.1rem;">
+                "Descubre tu verdadero potencial profesional con IA que encuentra empleos perfectos"
+            </p>
+            <div class="grid grid-3">
+                <div class="pricing-card">
+                    <h3 style="color: var(--vennii-dark-blue);">FREE</h3>
+                    <div class="price">$0</div>
+                    <div style="color: var(--vennii-orange); font-weight: 600; margin-bottom: 15px;">Adquisición</div>
+                    <ul class="features">
+                        <li>Análisis básico de CV</li>
+                        <li>3 matches por mes</li>
+                        <li>Info salarial básica</li>
+                        <li>1 alerta personalizada</li>
+                    </ul>
+                    <div style="margin-top: 15px; font-size: 0.85rem; color: var(--vennii-dark-gray);">
+                        Conversión esperada: 15-20% a Premium
+                    </div>
+                </div>
+                <div class="pricing-card featured">
+                    <h3 style="color: var(--vennii-orange);">PREMIUM</h3>
+                    <div class="price">$60<span style="font-size: 1rem;">/año</span></div>
+                    <div style="color: var(--vennii-orange); font-weight: 600; margin-bottom: 15px;">Más Popular</div>
+                    <ul class="features">
+                        <li>Matches ilimitados con scoring</li>
+                        <li>Análisis profundo de skills</li>
+                        <li>Datos salariales detallados</li>
+                        <li>Preparación para entrevistas</li>
+                        <li>Career roadmap personalizado</li>
+                    </ul>
+                </div>
+                <div class="pricing-card">
+                    <h3 style="color: var(--vennii-dark-blue);">PROFESSIONAL</h3>
+                    <div class="price">$150<span style="font-size: 1rem;">/año</span></div>
+                    <div style="color: var(--vennii-light-blue); font-weight: 600; margin-bottom: 15px;">Ejecutivo</div>
+                    <ul class="features">
+                        <li>Career coach virtual con IA</li>
+                        <li>Análisis competitivo de perfil</li>
+                        <li>Empleos ejecutivos exclusivos</li>
+                        <li>Personal branding optimization</li>
+                        <li>Consulta mensual incluida</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Servicios a la Carta B2C -->
+            <div style="margin-top: 30px;">
+                <h3 style="color: var(--vennii-dark-blue); text-align: center; margin-bottom: 20px;">Servicios A la Carta</h3>
+                <div class="grid grid-4">
+                    <div class="card" style="text-align: center; padding: 15px;">
+                        <h4 style="color: var(--vennii-orange);">CV Professional</h4>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--vennii-dark-blue);">$25</div>
+                        <p style="font-size: 0.85rem;">Reescritura profesional</p>
+                    </div>
+                    <div class="card" style="text-align: center; padding: 15px;">
+                        <h4 style="color: var(--vennii-orange);">LinkedIn Optimization</h4>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--vennii-dark-blue);">$35</div>
+                        <p style="font-size: 0.85rem;">Optimización de perfil</p>
+                    </div>
+                    <div class="card" style="text-align: center; padding: 15px;">
+                        <h4 style="color: var(--vennii-orange);">Mock Interview</h4>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--vennii-dark-blue);">$40</div>
+                        <p style="font-size: 0.85rem;">Entrevista práctica</p>
+                    </div>
+                    <div class="card" style="text-align: center; padding: 15px;">
+                        <h4 style="color: var(--vennii-orange);">Career Consultation</h4>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--vennii-dark-blue);">$75</div>
+                        <p style="font-size: 0.85rem;">Por hora</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modelo de Precios B2B -->
+        <section class="section animate-fade-in">
+            <h2 class="section-title">
+                <div class="section-icon">🏢</div>
+                Modelos B2B - TalentEngine
+            </h2>
+            <p style="text-align: center; color: var(--vennii-dark-gray); margin-bottom: 30px; font-size: 1.1rem;">
+                "Transforma la escasez de talento en abundancia de candidatos relevantes"
+            </p>
+            <div class="grid grid-3">
+                <div class="pricing-card">
+                    <h3 style="color: var(--vennii-dark-blue);">STARTER</h3>
+                    <div class="price">$299<span style="font-size: 1rem;">/mes</span></div>
+                    <div style="color: var(--vennii-light-blue); font-weight: 600; margin-bottom: 15px;">PYMEs en Crecimiento</div>
+                    <ul class="features">
+                        <li>Hasta 5 posiciones activas</li>
+                        <li>50 aplicaciones/mes</li>
+                        <li>Matching con IA básico</li>
+                        <li>Dashboard core metrics</li>
+                        <li>Email support</li>
+                    </ul>
+                    <div style="margin-top: 15px; font-size: 0.85rem; color: var(--vennii-dark-gray);">
+                        Ideal para empresas 51-200 empleados
+                    </div>
+                </div>
+                <div class="pricing-card featured">
+                    <h3 style="color: var(--vennii-orange);">PROFESSIONAL</h3>
+                    <div class="price">$599<span style="font-size: 1rem;">/mes</span></div>
+                    <div style="color: var(--vennii-orange); font-weight: 600; margin-bottom: 15px;">Más Popular</div>
+                    <ul class="features">
+                        <li>Hasta 15 posiciones activas</li>
+                        <li>200 aplicaciones/mes</li>
+                        <li>Analytics avanzados</li>
+                        <li>Custom branding</li>
+                        <li>5 usuarios incluidos</li>
+                        <li>Priority support</li>
+                    </ul>
+                    <div style="margin-top: 15px; font-size: 0.85rem; color: var(--vennii-dark-gray);">
+                        Ideal para empresas 101-500 empleados
+                    </div>
+                </div>
+                <div class="pricing-card">
+                    <h3 style="color: var(--vennii-dark-blue);">ENTERPRISE</h3>
+                    <div class="price">$999<span style="font-size: 1rem;">/mes</span></div>
+                    <div style="color: var(--vennii-light-blue); font-weight: 600; margin-bottom: 15px;">Empresas Grandes</div>
+                    <ul class="features">
+                        <li>Posiciones ilimitadas</li>
+                        <li>500+ aplicaciones/mes</li>
+                        <li>White-label solution</li>
+                        <li>API completo</li>
+                        <li>Account manager dedicado</li>
+                        <li>Advanced security</li>
+                    </ul>
+                    <div style="margin-top: 15px; font-size: 0.85rem; color: var(--vennii-dark-gray);">
+                        Ideal para empresas 500+ empleados
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Add-ons B2B -->
+            <div style="margin-top: 30px;">
+                <h3 style="color: var(--vennii-dark-blue); text-align: center; margin-bottom: 20px;">Add-ons Disponibles</h3>
+                <div class="grid grid-4">
+                    <div class="card" style="text-align: center; padding: 15px;">
+                        <h4 style="color: var(--vennii-orange);">AI Interview Assistant</h4>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--vennii-dark-blue);">+$100/mes</div>
+                        <p style="font-size: 0.85rem;">Asistente para entrevistas</p>
+                    </div>
+                    <div class="card" style="text-align: center; padding: 15px;">
+                        <h4 style="color: var(--vennii-orange);">Background Check</h4>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--vennii-dark-blue);">+$50/mes</div>
+                        <p style="font-size: 0.85rem;">Verificación de antecedentes</p>
+                    </div>
+                    <div class="card" style="text-align: center; padding: 15px;">
+                        <h4 style="color: var(--vennii-orange);">Advanced Analytics</h4>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--vennii-dark-blue);">+$200/mes</div>
+                        <p style="font-size: 0.85rem;">Analíticas avanzadas</p>
+                    </div>
+                    <div class="card" style="text-align: center; padding: 15px;">
+                        <h4 style="color: var(--vennii-orange);">Multi-language</h4>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--vennii-dark-blue);">+$150/mes</div>
+                        <p style="font-size: 0.85rem;">Soporte multiidioma</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Proyecciones Financieras -->
+        <section class="section animate-fade-in">
+            <h2 class="section-title">
+                <div class="section-icon">📈</div>
+                Proyecciones Financieras
+            </h2>
+            <div class="chart-container">
+                <canvas id="revenueChart"></canvas>
+            </div>
+            <div class="grid grid-3">
+                <div class="metric">
+                    <span class="metric-number">$175K</span>
+                    <div class="metric-label">Revenue Año 1</div>
+                </div>
+                <div class="metric">
+                    <span class="metric-number">$627K</span>
+                    <div class="metric-label">Revenue Año 2</div>
+                </div>
+                <div class="metric">
+                    <span class="metric-number">$1.35M</span>
+                    <div class="metric-label">Revenue Año 3</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Estrategia Go-to-Market -->
+        <section class="section animate-fade-in">
+            <h2 class="section-title">
+                <div class="section-icon">🚀</div>
+                Estrategia Go-to-Market
+            </h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>Fase 1: Foundation Building (Años 1-2)</h4>
+                    <p><strong>Enfoque:</strong> Validación de product-market fit<br>
+                    <strong>Target:</strong> Early adopters en segmentos primarios<br>
+                    <strong>Canales:</strong> Partnerships universitarios, marketing en redes sociales</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Fase 2: Scale & Expand (Años 2-3)</h4>
+                    <p><strong>Enfoque:</strong> Scaling a segmentos secundarios<br>
+                    <strong>Target:</strong> Market expansion dentro de Panamá<br>
+                    <strong>Canales:</strong> Content marketing, webinars, LinkedIn targeting</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Fase 3: Regional Expansion (Años 3-5)</h4>
+                    <p><strong>Enfoque:</strong> Expansión a Costa Rica y Guatemala<br>
+                    <strong>Target:</strong> Mercados similares en Centroamérica<br>
+                    <strong>Investment:</strong> Expansión internacional + localización</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Métricas Clave -->
+        <section class="section animate-fade-in">
+            <h2 class="section-title">
+                <div class="section-icon">📊</div>
+                Métricas Clave del Negocio
+            </h2>
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3>📱 Métricas B2C</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin: 8px 0;"><strong>CAC:</strong> $25-35</li>
+                        <li style="margin: 8px 0;"><strong>LTV:</strong> $180-450</li>
+                        <li style="margin: 8px 0;"><strong>LTV/CAC Ratio:</strong> 6-13x</li>
+                        <li style="margin: 8px 0;"><strong>Churn Rate:</strong> 15-20% anual</li>
+                        <li style="margin: 8px 0;"><strong>Conversion Rate:</strong> 18% (Free to Paid)</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🏢 Métricas B2B</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin: 8px 0;"><strong>CAC:</strong> $150-300</li>
+                        <li style="margin: 8px 0;"><strong>LTV:</strong> $21,600-36,000 (3 años)</li>
+                        <li style="margin: 8px 0;"><strong>LTV/CAC Ratio:</strong> 72-240x</li>
+                        <li style="margin: 8px 0;"><strong>Churn Rate:</strong> 8-12% anual</li>
+                        <li style="margin: 8px 0;"><strong>Expansion Revenue:</strong> 25% año 2+</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tecnología -->
+        <section class="section animate-fade-in">
+            <h2 class="section-title">
+                <div class="section-icon">⚙️</div>
+                Stack Tecnológico
+            </h2>
+            <div class="grid grid-4">
+                <div class="card">
+                    <h3>🔧 Backend</h3>
+                    <p>Python + LangChain + LLMs (OpenAI)</p>
+                </div>
+                <div class="card">
+                    <h3>🎯 Matching</h3>
+                    <p>Vectorización de CVs con FAISS</p>
+                </div>
+                <div class="card">
+                    <h3>💻 Frontend</h3>
+                    <p>Oracle APEX</p>
+                </div>
+                <div class="card">
+                    <h3>☁️ Hosting</h3>
+                    <p>Oracle Cloud</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section class="cta-section animate-fade-in">
+            <h2 style="font-size: 2.5rem; margin-bottom: 20px;">¿Listo para Revolucionar el Mercado Laboral?</h2>
+            <p style="font-size: 1.2rem; opacity: 0.9; margin-bottom: 30px;">
+                Únete a la transformación digital del empleo en Centroamérica con IA de vanguardia
+            </p>
+            <button class="cta-button">Comenzar con Vennii</button>
+        </section>
+    </div>
+
+    <script>
+        // Inicializar Chart.js para proyecciones financieras
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Año 1', 'Año 2', 'Año 3'],
+                    datasets: [
+                        {
+                            label: 'B2C Revenue',
+                            data: [39, 165, 390],
+                            borderColor: '#FCB32E',
+                            backgroundColor: 'rgba(252, 179, 46, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'B2B Revenue',
+                            data: [136, 462, 960],
+                            borderColor: '#01234B',
+                            backgroundColor: 'rgba(1, 35, 75, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Total Revenue',
+                            data: [175, 627, 1350],
+                            borderColor: '#60D3D3',
+                            backgroundColor: 'rgba(96, 211, 211, 0.1)',
+                            borderWidth: 4,
+                            fill: false,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#01234B',
+                                font: {
+                                    family: 'Inter',
+                                    weight: '600'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(1, 35, 75, 0.9)',
+                            titleColor: '#FCB32E',
+                            bodyColor: '#FFFFFF',
+                            borderColor: '#60D3D3',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': $' + context.raw + 'K';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#01234B',
+                                font: {
+                                    family: 'Inter',
+                                    weight: '500'
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(96, 211, 211, 0.3)'
+                            },
+                            ticks: {
+                                color: '#01234B',
+                                font: {
+                                    family: 'Inter',
+                                    weight: '500'
+                                },
+                                callback: function(value) {
+                                    return '$' + value + 'K';
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+
+            // Animaciones al hacer scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('
